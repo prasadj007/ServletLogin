@@ -13,8 +13,8 @@ import java.io.PrintWriter;
 description="Login Servlet Testing",
 urlPatterns = {"/LoginServlet"},
 initParams = {
-        @WebInitParam(name="user", value = "Prasad"),
-        @WebInitParam(name="password", value ="@prasad")
+        @WebInitParam(name="user", value = "Pra"),
+        @WebInitParam(name="password", value ="pr")
         }
 )
 public class LoginServlet extends HttpServlet {
@@ -24,13 +24,26 @@ public class LoginServlet extends HttpServlet {
         String pwd = req.getParameter("pwd");
         String userID = getServletConfig().getInitParameter("user");
         String password = getServletConfig().getInitParameter("password");
-        if(userID.equals(user) && password.equals(pwd)) {
+        PrintWriter out = resp.getWriter();
+        Validate validate = new Validate();
+
+        if (!validate.validateName(user)) {
+            RequestDispatcher rd = getServletContext().getRequestDispatcher("/Login.html");
+            out.println("<font color = red> Name must be starts with UpperCaseLetter and required minimum 3 characters </font> ");
+            rd.include(req, resp);
+        }
+        else if (!validate.validatePassword(pwd)) {
+            RequestDispatcher rd = getServletContext().getRequestDispatcher("/Login.html");
+            out.println("<font color = red> Password must contain 8 Characters atleast 1 UpperLetter 1 number,1 Special Character </font> ");
+            rd.include(req, resp);
+        }
+        else if(userID.equals(user) && password.equals(pwd)) {
             req.setAttribute("user", user);
             req.getRequestDispatcher("LoginSuccess.jsp").forward(req, resp);
         }
             else{
                 RequestDispatcher rd = getServletContext().getRequestDispatcher("/Login.html");
-                PrintWriter out = resp.getWriter();
+
                 out.println("<font color=red>Either Username or password is Incorrect.</font>");
                 rd.include(req, resp);
             }
